@@ -1,5 +1,11 @@
 # Data Maestro Labs (DML) Data Platform
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Objectives](#objectives)
+- [Platform Folder Structure](#platform-folder-structure)
+
 ## Overview
 
 This repo contains the structure for the DML data platform.
