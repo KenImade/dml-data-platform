@@ -4,7 +4,11 @@
 
 - [Overview](#overview)
 - [Objectives](#objectives)
+- [System Architecture](#system-architecture)
+- [Tech Stack](#tech-stack)
 - [Platform Folder Structure](#platform-folder-structure)
+
+---
 
 ## Overview
 
@@ -13,12 +17,37 @@ The aim of this project is to build a data platform for building
 end-to-end data pipelines for various analytical or machine learning
 projects using only open source tools.
 
+---
+
 ## Objectives
 
 - Build using only open source tools.
 - Platform will be based on the Extract, Load, Transform design pattern.
 - Implement proper CI/CD processes to ensure that the platform is fully
   automated, versioned, and reproducible.
+
+---
+
+## System Architecture
+
+
+---
+
+## Tech Stack
+
+| Layer           | Tool                               | Role                              |
+|-----------------|------------------------------------|:----------------------------------|
+| Orchestration   | Dagster                            | Pipeline scheduling & lineage     |
+| Data Cataloging | OpenMetadata                       | Metadata, lineage, and discovery  |
+| Storage         | duckdb + MinIO + Parquet + Iceberg | Data lakehouse foundation         |
+| Ingestion       | Airbyte                            | Source replication                |
+| Transformation  | dbt + duckdb + pandas              | Transformations                   |
+| Observability   | Elementary                         | Data quality                      |
+| Versioning      | DVC                                | Data lineage & reproducibility    |
+| Deployment      | Portainer (Docker)                 | Container orchestration on server |
+
+
+---
 
 ## Platform Folder Structure
 
@@ -55,3 +84,5 @@ data-platform/
 │   └── dbt/
 └── .github/
 ```
+
+---
