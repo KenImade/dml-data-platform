@@ -11,11 +11,14 @@ dependencies = [
 dev = ["dagster-webserver", "dagster-dg-cli"]
 docker = [
     "dagster-aws>=0.28.2",
+    "dagster-dbt>=0.28.2",
     "dagster-docker>=0.28.2",
     "dagster-graphql>=1.12.2",
     "dagster-postgres>=0.28.2",
     "dagster-webserver>=1.12.2",
+    "dbt-duckdb>=1.10.0",
     "polars>=1.35.2",
+    "pyarrow>=22.0.0",
 ]
 
 [build-system]

@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: taxi_daily_metrics
+    description: Daily aggregated metrics for NYC taxi trips
+    columns:
+      - name: trip_date
+        description: Date of trips
+        tests:
+          - unique
+          - not_null
+      - name: total_trips
+        description: Total number of trips
+      - name: total_revenue
+        description: Total revenue generated
+      - name: avg_trip_distance
+        description: Average trip distance in miles
+      - name: avg_fare_amount
+        description: Average fare amount
+
+  - name: taxi_hourly_metrics
+    description: Hourly aggregated metrics for NYC taxi trips
+    columns:
+      - name: pickup_hour
+        description: Hour of day (0-23)
+      - name: total_trips
+        description: Total trips in this hour
+      - name: avg_trip_distance
+        description: Average trip distance

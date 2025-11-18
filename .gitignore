@@ -1,6 +1,12 @@
 # Ignoring data files
 storage/*
 storage/minio/*
+dml-dbt/dml_dbt_platform/data/*
+
+# Log files
+log/*
+logs/*
+dml-dbt/dml_dbt_platform/logs/*
 
 ### macOS template
 # General

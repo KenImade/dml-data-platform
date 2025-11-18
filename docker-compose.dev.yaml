@@ -41,6 +41,7 @@ services:
     command: ["dagster-daemon", "run"]
     volumes:
       - ./dml-orchestrator/src:/opt/app/src
+      - ./dml-dbt/dml_dbt_platform:/opt/dbt/project
     depends_on:
       - postgresql
       - minio
@@ -58,6 +59,7 @@ services:
     command: [ "dagster-webserver", "-h", "0.0.0.0", "-p", "3000" ]
     volumes:
       - ./dml-orchestrator/src:/opt/app/src
+      - ./dml-dbt/dml_dbt_platform:/opt/dbt/project
     ports:
       - "3000:3000"
     depends_on:

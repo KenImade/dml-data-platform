@@ -1,0 +1,8 @@
+dml_dbt_platform:
+
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH', './data/warehouse/warehouse.duckdb') }}"
+      threads: 24

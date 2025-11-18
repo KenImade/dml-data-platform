@@ -3,7 +3,7 @@ from dagster import Definitions, load_assets_from_modules
 from dotenv import load_dotenv
 
 # Import your resource
-from .defs.resources import MinIOResource
+from .defs.resources import MinIOResource, get_dbt_resource
 
 # Import your assets
 from .defs import assets
@@ -20,6 +20,7 @@ defs = Definitions(
             secret_key=os.getenv("MINIO_ROOT_PASSWORD", "password123456"),
             bucket="test-bucket",
             region_name=os.getenv("MINIO_REGION", "us-east-1"),
-        )
+        ),
+        "dbt": get_dbt_resource()
     },
 )

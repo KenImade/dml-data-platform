@@ -1,0 +1,30 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw data loaded from MinIO
+    tables:
+      - name: nyc_taxi_trips
+        description: NYC Yellow Taxi trip records
+
+models:
+  - name: stg_nyc_taxi_trips
+    description: Cleaned and standardized NYC taxi trip data
+    columns:
+      - name: trip_id
+        description: Unique identifier for each trip
+        tests:
+          - unique
+          - not_null
+      - name: pickup_datetime
+        description: Trip start timestamp
+      - name: dropoff_datetime
+        description: Trip end timestamp
+      - name: passenger_count
+        description: Number of passengers
+      - name: trip_distance
+        description: Trip distance in miles
+      - name: fare_amount
+        description: Base fare amount
+      - name: total_amount
+        description: Total amount charged
