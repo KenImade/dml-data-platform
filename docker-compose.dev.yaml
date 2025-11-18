@@ -1,0 +1,53 @@
+services:
+  postgresql:
+    image: postgres:15
+    container_name: dml_data_platform_postgres_dev
+    env_file:
+      - ./env/.env.dev
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - dml_data_platform_dev_nw
+  
+  dagster_daemon:
+    build:
+      context: .
+      dockerfile: docker/dev/dagster/Dockerfile
+    container_name: dml_data_platform_dagster_daemon_dev
+    env_file:
+      - ./env/.env.dev
+    command: ["dagster-daemon", "run"]
+    volumes:
+      - ./dml-orchestrator/src:/opt/app/src
+    depends_on:
+      - postgresql
+    networks:
+      - dml_data_platform_dev_nw
+    restart: on-failure
+  
+  dagster_webserver:
+    build:
+      context: .
+      dockerfile: docker/dev/dagster/Dockerfile
+    container_name: dml_data_platform_dagster_webserver_dev
+    env_file:
+      - ./env/.env.dev
+    command: [ "dagster-webserver", "-h", "0.0.0.0", "-p", "3000" ]
+    volumes:
+      - ./dml-orchestrator/src:/opt/app/src
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgresql
+    networks:
+      - dml_data_platform_dev_nw
+    restart: on-failure
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  dml_data_platform_dev_nw:
+    driver: bridge

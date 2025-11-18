@@ -30,7 +30,6 @@ projects using only open source tools.
 
 ## System Architecture
 
-
 ---
 
 ## Tech Stack
@@ -45,7 +44,6 @@ projects using only open source tools.
 | Observability   | Elementary                         | Data quality                      |
 | Versioning      | DVC                                | Data lineage & reproducibility    |
 | Deployment      | Portainer (Docker)                 | Container orchestration on server |
-
 
 ---
 
