@@ -1,8 +1,25 @@
-from pathlib import Path
+import os
+from dagster import Definitions, load_assets_from_modules
+from dotenv import load_dotenv
 
-from dagster import definitions, load_from_defs_folder
+# Import your resource
+from .defs.resources import MinIOResource
 
+# Import your assets
+from .defs import assets
 
-@definitions
-def defs():
-    return load_from_defs_folder(path_within_project=Path(__file__).parent)
+# Load environment variables
+load_dotenv()
+
+defs = Definitions(
+    assets=load_assets_from_modules([assets]),
+    resources={
+        "minio": MinIOResource(
+            endpoint_url=os.getenv("DAGSTER_MINIO_SERVER", "http://minio:9000"),
+            access_key=os.getenv("MINIO_ROOT_USER", "dagster"),
+            secret_key=os.getenv("MINIO_ROOT_PASSWORD", "password123456"),
+            bucket="test-bucket",
+            region_name=os.getenv("MINIO_REGION", "us-east-1"),
+        )
+    },
+)
