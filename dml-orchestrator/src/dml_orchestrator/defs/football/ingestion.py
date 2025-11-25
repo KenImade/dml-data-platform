@@ -7,7 +7,7 @@ from ..utils.validate_csv import validate_csv
 from ..utils.parquet import dataframe_to_parquet_bytes
 from ..utils.ingest_csv import get_csv
 
-from .models import Player, Team
+from .models import Player, Team, PlayerStats
 
 
 @asset(
@@ -45,7 +45,7 @@ def raw_players_data(
             f"Uploaded CSV to MinIO bucket '{minio_config.main_bucket}' at key '{minio_key}'"
         )
     except ClientError as e:
-        context.log.info(f"Failed to upload file to MinIO: {e}")
+        context.log.error(f"Failed to upload file to MinIO: {e}")
         raise
 
     metadata: Dict[str, Any] = {
@@ -184,6 +184,92 @@ def validated_teams_data(
         "minio_key": minio_key,
         "teams_count": df.height,
         "teams_preview": MetadataValue.md(
+            df.head(10).to_pandas().to_markdown(index=False)
+        ),
+    }
+
+    context.add_output_metadata(metadata)
+    return parquet_bytes
+
+
+@asset(
+    description="Ingests the raw playerstats CSV file from GitHub",
+    group_name="football_ingestion",
+    required_resource_keys={"minio"},
+)
+def raw_playerstats_data(context: AssetExecutionContext) -> bytes:
+    """
+    Ingests the raw playerstats CSV from GitHub and stores it in the MinIO raw bucket.
+    """
+    csv_path = github_config.data_files["playerstats"]
+    url = f"{github_config.base_url}{csv_path}"
+
+    context.log.info(f"Downloading playerstats CSV from {url}")
+    csv_bytes = get_csv(url)
+
+    minio = context.resources.minio
+    minio_key = f"{minio_config.raw_data_path}/{github_config.season}/playerstats.csv"
+
+    try:
+        context.log.info(
+            f"Uploading to MinIO bucket '{minio_config.main_bucket}' at key '{minio_key}'"
+        )
+
+        minio.put_object(bucket=minio_config.main_bucket, key=minio_key, body=csv_bytes)
+
+        context.log.info(
+            f"Uploaded playerstats CSV to MinIO bucket '{minio_config.main_bucket}' at key '{minio_key}'"
+        )
+    except ClientError as e:
+        context.log.error(f"Failed to upload file to MinIO: {e}")
+        raise
+
+    metadata: Dict[str, Any] = {
+        "minio_bucket": minio_config.main_bucket,
+        "minio_key": minio_key,
+        "bytes_downloaded": len(csv_bytes),
+        "source_url": url,
+    }
+
+    context.add_output_metadata(metadata)
+
+    return csv_bytes
+
+
+@asset(
+    description="Validation of playerstats data",
+    group_name="football_ingestion",
+    ins={"raw_playerstats_data": AssetIn()},
+    required_resource_keys={"minio"},
+)
+def validated_playerstats_data(
+    context: AssetExecutionContext, raw_playerstats_data: bytes
+) -> bytes:
+    minio = context.resources.minio
+
+    try:
+        df = validate_csv(raw_playerstats_data, PlayerStats)
+    except Exception as e:
+        context.log.error(f"Validation failed: {e}")
+        raise
+
+    parquet_bytes = dataframe_to_parquet_bytes(df)
+
+    minio_key = (
+        f"{minio_config.staging_data_path}/"
+        f"{github_config.season}/playerstats.parquet"
+    )
+    minio.put_object(bucket=minio_config.main_bucket, key=minio_key, body=parquet_bytes)
+
+    context.log.info(
+        f"Uploaded validated Parquet to s3://{minio_config.main_bucket}/{minio_key}"
+    )
+
+    metadata: Dict[str, Any] = {
+        "minio_bucket": minio_config.main_bucket,
+        "minio_key": minio_key,
+        "playerstats_count": df.height,
+        "playerstats_preview": MetadataValue.md(
             df.head(10).to_pandas().to_markdown(index=False)
         ),
     }

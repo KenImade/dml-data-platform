@@ -5,6 +5,8 @@ from .defs.football.ingestion import (
     validated_players_data,
     raw_teams_data,
     validated_teams_data,
+    raw_playerstats_data,
+    validated_playerstats_data,
 )
 from .defs.football.asset_checks import (
     check_players_csv_non_empty,
@@ -21,6 +23,8 @@ defs = Definitions(
         validated_players_data,
         raw_teams_data,
         validated_teams_data,
+        raw_playerstats_data,
+        validated_playerstats_data,
     ],
     asset_checks=[
         check_players_csv_non_empty,

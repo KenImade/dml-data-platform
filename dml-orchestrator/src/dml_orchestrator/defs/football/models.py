@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, ConfigDict, field_validator
-from typing import Literal
+from typing import Literal, Optional
 
 
 class Player(BaseModel):
@@ -39,3 +39,51 @@ class Team(BaseModel):
     strength_defence_away: int
     pulse_id: int
     elo: int
+
+
+class PlayerStats(BaseModel):
+    id: int
+    status: Literal["u", "a", "d", "i", "s", "n"]
+
+    chance_of_playing_next_round: Optional[float]
+    chance_of_playing_this_round: Optional[float]
+
+    now_cost: float
+    now_cost_rank: int
+    now_cost_rank_type: int
+    cost_change_event: int
+    cost_change_event_fall: int
+    cost_change_start: int
+    cost_change_start_fall: int
+
+    form: float
+    form_rank: int
+    form_rank_type: int
+
+    points_per_game: float
+    selected_by_percent: float
+    selected_rank: int
+    selected_rank_type: int
+
+    influence: float
+    influence_rank: int
+    influence_rank_type: int
+
+    creativity: float
+    creativity_rank: int
+    creativity_rank_type: int
+
+    threat: float
+    threat_rank: int
+    threat_rank_type: int
+
+    ict_index: float
+    ict_index_rank: int
+    ict_index_rank_type: int
+
+    corners_and_indirect_freekicks_order: Optional[float]
+    direct_freekicks_order: Optional[float]
+    penalties_order: Optional[float]
+
+    gw: int
+    set_piece_threat: Optional[float]
