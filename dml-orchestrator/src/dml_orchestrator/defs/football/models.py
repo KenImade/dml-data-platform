@@ -19,3 +19,23 @@ class Player(BaseModel):
         if not v.strip():
             raise ValueError("Name fields cannot be empty")
         return v.strip()
+
+
+class Team(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    code: int = Field(gt=0, description="The team's unique code in the FPL API")
+    id: int = Field(
+        gt=0, description="A unique identifier for each team within this dataset"
+    )
+    name: str
+    short_name: str
+    strength: int
+    strength_overall_home: int
+    strength_overall_away: int
+    strength_attack_home: int
+    strength_attack_away: int
+    strength_defence_home: int
+    strength_defence_away: int
+    pulse_id: int
+    elo: int

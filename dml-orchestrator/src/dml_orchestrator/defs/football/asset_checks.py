@@ -71,10 +71,33 @@ def check_players_schema(validated_players_data: bytes):
             passed=False,
             description="Validated players data does not have required columns",
             severity=AssetCheckSeverity.WARN,
+            metadata={"missing_columns": list(missing)},
         )
 
     return AssetCheckResult(
         passed=True,
         description="Validated players data has required columns",
         metadata={"rows": df.height},
+    )
+
+
+@asset_check(
+    asset="validated_teams_data",
+    description="Ensure that the dataset has the required number of teams",
+)
+def check_number_of_teams(validated_teams_data: bytes):
+    df = pl.read_parquet(io.BytesIO(validated_teams_data))
+
+    if df.height != 20:
+        return AssetCheckResult(
+            passed=False,
+            description="Teams dataset does not contain the right number of teams",
+            severity=AssetCheckSeverity.ERROR,
+            metadata={"number_of_teams": df.height},
+        )
+
+    return AssetCheckResult(
+        passed=True,
+        description="Teams dataset contains right number of teams.",
+        metadata={"number_of_teams": df.height},
     )
