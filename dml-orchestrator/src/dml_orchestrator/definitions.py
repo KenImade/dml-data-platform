@@ -1,26 +1,23 @@
-import os
-from dagster import Definitions, load_assets_from_modules
-from dotenv import load_dotenv
+from dagster import Definitions
+from .defs.resources.minio import MinIOResource
+from .defs.football.ingestion import raw_players_data, validated_players_data
+from .defs.football.asset_checks import (
+    check_players_csv_non_empty,
+    check_players_csv_headers,
+)
+from .defs.football.config import settings
 
-# Import your resource
-from .defs.resources import MinIOResource, get_dbt_resource
-
-# Import your assets
-from .defs import assets
-
-# Load environment variables
-load_dotenv()
 
 defs = Definitions(
-    assets=load_assets_from_modules([assets]),
+    assets=[raw_players_data, validated_players_data],
+    asset_checks=[check_players_csv_non_empty, check_players_csv_headers],
     resources={
         "minio": MinIOResource(
-            endpoint_url=os.getenv("DAGSTER_MINIO_SERVER", "http://minio:9000"),
-            access_key=os.getenv("MINIO_ROOT_USER", "dagster"),
-            secret_key=os.getenv("MINIO_ROOT_PASSWORD", "password123456"),
-            bucket="test-bucket",
-            region_name=os.getenv("MINIO_REGION", "us-east-1"),
+            endpoint=settings.minio.endpoint_url,
+            access_key=settings.minio.access_key,
+            secret_key=settings.minio.secret_key,
+            region_name=settings.minio.region,
         ),
-        "dbt": get_dbt_resource()
+        # "dbt": get_dbt_resource(),
     },
 )
