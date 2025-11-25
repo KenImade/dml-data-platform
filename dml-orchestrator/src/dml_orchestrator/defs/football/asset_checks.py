@@ -1,5 +1,6 @@
 import io
 import csv
+import polars as pl
 from dagster import asset_check, AssetCheckResult, AssetCheckSeverity
 
 
@@ -44,3 +45,36 @@ def check_players_csv_headers(data: bytes) -> AssetCheckResult:
             severity=AssetCheckSeverity.ERROR,
             metadata={"error": str(e)},
         )
+
+
+@asset_check(
+    asset="validated_players_data",
+    description="Ensure validated players data has the required schema",
+)
+def check_players_schema(validated_players_data: bytes):
+    df = pl.read_parquet(io.BytesIO(validated_players_data))
+
+    required_columns = {
+        "player_code",
+        "player_id",
+        "first_name",
+        "second_name",
+        "web_name",
+        "team_code",
+        "position",
+    }
+
+    missing = required_columns - set(df.columns)
+
+    if missing:
+        return AssetCheckResult(
+            passed=False,
+            description="Validated players data does not have required columns",
+            severity=AssetCheckSeverity.WARN,
+        )
+
+    return AssetCheckResult(
+        passed=True,
+        description="Validated players data has required columns",
+        metadata={"rows": df.height},
+    )

@@ -1,7 +1,6 @@
-import io
-from dagster import asset, AssetExecutionContext
+from dagster import asset, AssetExecutionContext, MetadataValue
 import requests
-import polars as pl
+from typing import Dict, Any
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from botocore.exceptions import ClientError
@@ -62,7 +61,7 @@ def raw_players_data(
         context.log.info(f"Failed to upload file to MinIO: {e}")
         raise
 
-    metadata = {
+    metadata: Dict[str, Any] = {
         "minio_bucket": minio_config.main_bucket,
         "minio_key": minio_key,
         "bytes_downloaded": len(response.content),
@@ -80,7 +79,9 @@ def raw_players_data(
     deps=[raw_players_data],
     required_resource_keys={"minio"},
 )
-def validated_players_data(context: AssetExecutionContext, raw_players_data: bytes):
+def validated_players_data(
+    context: AssetExecutionContext, raw_players_data: bytes
+) -> bytes:
     minio = context.resources.minio
 
     try:
@@ -100,4 +101,15 @@ def validated_players_data(context: AssetExecutionContext, raw_players_data: byt
     context.log.info(
         f"Uploaded validated Parquet to s3://{minio_config.main_bucket}/{minio_key}"
     )
+
+    metadata: Dict[str, Any] = {
+        "minio_bucket": minio_config.main_bucket,
+        "minio_key": minio_key,
+        "players_count": df.height,
+        "players_preview": MetadataValue.md(
+            df.head(10).to_pandas().to_markdown(index=False)
+        ),
+    }
+
+    context.add_output_metadata(metadata)
     return parquet_bytes

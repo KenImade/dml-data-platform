@@ -4,13 +4,18 @@ from .defs.football.ingestion import raw_players_data, validated_players_data
 from .defs.football.asset_checks import (
     check_players_csv_non_empty,
     check_players_csv_headers,
+    check_players_schema,
 )
 from .defs.football.config import settings
 
 
 defs = Definitions(
     assets=[raw_players_data, validated_players_data],
-    asset_checks=[check_players_csv_non_empty, check_players_csv_headers],
+    asset_checks=[
+        check_players_csv_non_empty,
+        check_players_csv_headers,
+        check_players_schema,
+    ],
     resources={
         "minio": MinIOResource(
             endpoint=settings.minio.endpoint_url,
