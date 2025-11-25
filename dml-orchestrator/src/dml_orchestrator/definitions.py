@@ -2,11 +2,15 @@ from dagster import Definitions
 from .defs.resources.minio import MinIOResource
 from .defs.football.ingestion import (
     raw_players_data,
-    validated_players_data,
     raw_teams_data,
-    validated_teams_data,
     raw_playerstats_data,
+    raw_playermatchstats_data,
+)
+from .defs.football.validation import (
+    validated_players_data,
+    validated_teams_data,
     validated_playerstats_data,
+    validated_playermatchstats_data,
 )
 from .defs.football.asset_checks import (
     check_players_csv_non_empty,
@@ -25,6 +29,8 @@ defs = Definitions(
         validated_teams_data,
         raw_playerstats_data,
         validated_playerstats_data,
+        raw_playermatchstats_data,
+        validated_playermatchstats_data,
     ],
     asset_checks=[
         check_players_csv_non_empty,

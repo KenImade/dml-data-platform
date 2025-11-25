@@ -1,4 +1,4 @@
-from typing import Literal, Dict
+from typing import Literal, Dict, ClassVar, Set
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -15,16 +15,40 @@ class GitHubSettings(BaseSettings):
     gameweek: str = Field(default="GW1", description="gameweek")
     retry_attempts: int = Field(default=3, description="Number of retry attempts.")
 
+    OlD_SEASON_SINGLE_FILE: ClassVar[Set[str]] = {"teams", "players", "playerstats"}
+    OLD_SEASONS: ClassVar[Set[str]] = {"2024-2025"}
+
     @computed_field
     @property
-    def data_files(self) -> Dict[str, str]:
-        "Dynamically compute file paths based on season and gameweek."
+    def normalized_gw(self) -> str:
+        gw = str(self.gameweek)
+        if gw.upper().startswith("GW"):
+            return gw.upper()
+        return f"GW{gw}"
+
+    def build_gw_path(self, dataset: str, gw_override: str | None = None) -> str:
+        season = str(self.season)
+        gw = gw_override or self.normalized_gw
+
+        if season in self.OLD_SEASONS:
+            if dataset in self.OlD_SEASON_SINGLE_FILE:
+                return f"/data/{season}/{dataset}/{dataset}.csv"
+            return f"/data/{season}/{dataset}/{gw}/{dataset}.csv"
+
+        return f"/data/{season}/By Gameweek/{gw}/{dataset}.csv"
+
+    def build_gw_url(self, dataset: str, gw_override: str | None = None) -> str:
+        return f"{self.base_url}{self.build_gw_path(dataset, gw_override)}"
+
+    @computed_field
+    @property
+    def gw_data_files(self) -> Dict[str, str]:
         return {
-            "matches": f"/data/{self.season}/matches/{self.gameweek}/matches.csv",
-            "playermatchstats": f"/data/{self.season}/playermatchstats/{self.gameweek}/playermatchstats.csv",
-            "players": f"/data/{self.season}/players/players.csv",
-            "playerstats": f"/data/{self.season}/playerstats/playerstats.csv",
-            "teams": f"/data/{self.season}/teams/teams.csv",
+            "matches": self.build_gw_url("matches"),
+            "playermatchstats": self.build_gw_url("playermatchstats"),
+            "players": self.build_gw_url("players"),
+            "playerstats": self.build_gw_url("playerstats"),
+            "teams": self.build_gw_url("teams"),
         }
 
 
@@ -34,19 +58,16 @@ class MinIOSettings(BaseSettings):
     endpoint: str = Field(
         default="http://localhost:9000",
         validation_alias="DAGSTER_MINIO_SERVER",
-        description="MinIO endpoint",
     )
 
     access_key: str = Field(
         default="minio",
         validation_alias="MINIO_ROOT_USER",
-        description="MinIO access key",
     )
 
     secret_key: str = Field(
         default="minio",
         validation_alias="MINIO_ROOT_PASSWORD",
-        description="MinIO secret key",
     )
 
     main_bucket: str = Field(default="dml-dev", description="Main bucket for data")
@@ -72,6 +93,36 @@ class MinIOSettings(BaseSettings):
         if self.secure:
             url = url.replace("http", "https")
         return url
+
+    @staticmethod
+    def normalize_season(season: str) -> str:
+        return str(season)
+
+    @staticmethod
+    def normalize_gw(gw: str) -> str:
+        gw = str(gw)
+        if gw.upper().startswith("GW"):
+            return gw.upper()
+        return f"GW{gw}"
+
+    def build_raw_gw_key(self, dataset: str, season: str, gw: str, ext="csv") -> str:
+        season = self.normalize_season(season)
+        gw = self.normalize_gw(gw)
+        return f"{self.raw_data_path}/{season}/{gw}/{dataset}.{ext}"
+
+    def build_staging_gw_key(
+        self, dataset: str, season: str, gw: str, ext="parquet"
+    ) -> str:
+        season = self.normalize_season(season)
+        gw = self.normalize_gw(gw)
+        return f"{self.staging_data_path}/{season}/{gw}/{dataset}.{ext}"
+
+    def build_archive_gw_key(
+        self, dataset: str, season: str, gw: str, ext="csv"
+    ) -> str:
+        season = self.normalize_season(season)
+        gw = self.normalize_gw(gw)
+        return f"{self.archive_data_path}/{season}/{gw}/{dataset}.{ext}"
 
 
 class PipelineSettings(BaseSettings):

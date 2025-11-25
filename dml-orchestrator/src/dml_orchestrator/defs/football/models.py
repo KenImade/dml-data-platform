@@ -42,6 +42,7 @@ class Team(BaseModel):
 
 
 class PlayerStats(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
     id: int
     status: Literal["u", "a", "d", "i", "s", "n"]
 
@@ -87,3 +88,72 @@ class PlayerStats(BaseModel):
 
     gw: int
     set_piece_threat: Optional[float]
+
+
+class PlayerMatchStats(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    player_id: int
+    match_id: str
+
+    minutes_played: int
+    goals: int
+    assists: int
+
+    total_shots: int
+    xg: float
+    xa: float
+    xgot: float
+    shots_on_target: int
+
+    key_passes: int
+    shot_creating_actions: int
+    goal_creating_actions: int
+
+    passes_completed: int
+    passes_attempted: int
+    progressive_passes: int
+    pass_completion_percent: int
+
+    carries: int
+    progressive_carries: int
+    take_ons_attempted: int
+    take_ons_succeeded: int
+
+    touches: int
+    touches_att_pen_area: int
+    touches_att_3rd: int
+    touches_def_pen_area: int
+
+    blocks: int
+    interceptions: int
+    clearances: int
+    errors_leading_to_shot: int
+    errors_leading_to_goal: int
+
+    tackles_won: int
+    dribblers_tackled: int
+
+    yellow_cards: int
+    red_cards: int
+    fouls: int
+    fouls_drawn: int
+    offsides: int
+
+    high_claim: int
+    tackles: int
+
+    accurate_passes_percent: int
+    accurate_crosses_percent: int
+    accurate_long_balls_percent: int
+
+    ground_duels_won_percent: int
+    aerial_duels_won_percent: int
+    successful_dribbles_percent: int
+    tackles_won_percent: int
+
+    start_min: int
+    finish_min: int
+
+    team_goals_conceded: int
+    penalties_scored: int
+    penalties_missed: int
