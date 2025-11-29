@@ -1,0 +1,182 @@
+from typing import Any, Optional
+import pickle
+
+from dagster import (
+    InitResourceContext,
+    InputContext,
+    OutputContext,
+    io_manager,
+    ConfigurableIOManager,
+)
+from pydantic import Field
+from minio import Minio
+from minio.error import S3Error
+import io
+
+
+class MinioIOManager(ConfigurableIOManager):
+    """
+    IO Manager that stores data in MinIO with support for dynamic paths based on asset metadata.
+
+    Configuration:
+        endpoint: MinIO server endpoint (e.g., "localhost:9000")
+        access_key: MinIO access key
+        secret_key: MinIO secret key
+        bucket_name: Default bucket name for storage
+        secure: Use HTTPS (default: False)
+        region: MinIO region (optional)
+
+    Asset metadata for path customization:
+        - path_prefix: Custom prefix for the object path
+        - path_suffix: Custom suffix for the object path
+        - file_extension: Custom file extension (default: "pickle")
+    """
+
+    endpoint: str = Field(description="MinIO server endpoint")
+    access_key: str = Field(description="MinIO access key")
+    secret_key: str = Field(description="MinIO secret key")
+    bucket_name: str = Field(description="Default bucket name")
+    secure: bool = Field(default=False, description="Use HTTPS connection")
+    region: Optional[str] = Field(default=None, description="MinIO region")
+
+    def setup_for_execution(self, context: InitResourceContext) -> None:
+        """Initialize MinIO client and ensure bucket exists"""
+        self._client = Minio(
+            self.endpoint,
+            access_key=self.access_key,
+            secret_key=self.secret_key,
+            secure=self.secure,
+            region=self.region,
+        )
+
+        try:
+            if not self._client.bucket_exists(self.bucket_name):
+                self._client.make_bucket(self.bucket_name)
+                context.log.info(f"Created bucket: {self.bucket_name}")
+        except S3Error as e:
+            context.log.error(f"Error checking/creating bucket: {e}")
+            raise
+
+    def _get_object_path(self, context: OutputContext) -> str:
+        """
+        Construct the object path based on context and asset metadata.
+
+        Supports custom path components via metadata:
+        - metadata["path_prefix"]: Custom prefix (e.g., "processed/data")
+        - metadata["path_suffix"]: Custom suffix (e.g., "v2")
+        - metadata["file_extension"]: File extension (default: "pickle")
+        """
+        parts: list[str] = []
+
+        metadata = context.definition_metadata or {}
+
+        context.log.debug(f"Metadata getting to IO Manager: {metadata}")
+
+        path_prefix_value = metadata.get("path_prefix", "")
+        if callable(path_prefix_value):
+            path_prefix = path_prefix_value(context)
+            context.log.debug(f"Current path_prefix: {path_prefix}")
+        else:
+            path_prefix = path_prefix_value
+
+        path_suffix_value = metadata.get("path_suffix", "")
+        if callable(path_suffix_value):
+            path_suffix = path_suffix_value(context)
+        else:
+            path_suffix = path_suffix_value
+
+        file_extension = metadata.get("file_extension", "pickle")
+
+        if path_prefix:
+            parts.append(path_prefix.strip("/"))
+        else:
+            if context.asset_key:
+                parts.extend(context.asset_key.path)
+            else:
+                parts.append(context.step_key)
+
+        if context.has_asset_partitions and not path_prefix:
+            parts.append(f"partition={context.partition_key}")
+
+        if path_suffix:
+            parts.append(path_suffix)
+
+        path = "/".join(parts)
+        return f"{path}.{file_extension}"
+
+    def _get_bucket_name(self, context: OutputContext) -> str:
+        """Get bucket name from metadata or use default"""
+        metadata = context.metadata or {}
+        return metadata.get("bucket_name", self.bucket_name)
+
+    def handle_output(self, context: OutputContext, obj: Any) -> None:
+        """Store the output object in MinIO"""
+        object_path = self._get_object_path(context)
+        bucket_name = self._get_bucket_name(context)
+
+        context.log.info(f"Writing to MinIO: {bucket_name}/{object_path}")
+
+        try:
+            serialized_data = pickle.dumps(obj)
+            data_stream = io.BytesIO(serialized_data)
+
+            self._client.put_object(
+                bucket_name,
+                object_path,
+                data_stream,
+                length=len(serialized_data),
+                content_type="application/octet-stream",
+            )
+
+            context.log.info(
+                f"Successfully wrote {len(serialized_data)} bytes to {bucket_name}/{object_path}"
+            )
+
+            context.add_output_metadata(
+                {
+                    "minio_path": object_path,
+                    "minio_bucket": bucket_name,
+                    "size_bytes": len(serialized_data),
+                }
+            )
+        except S3Error as e:
+            context.log.error(f"Error writing to MinIO: {e}")
+            raise
+
+    def load_input(self, context: InputContext) -> Any:
+        """Load the input object from MinIO"""
+        upstream_output = context.upstream_output
+        if upstream_output and upstream_output.metadata:
+            object_path = upstream_output.metadata.get("minio_path")
+            bucket_name = upstream_output.metadata.get("minio_bucket", self.bucket_name)
+        else:
+            object_path = self._get_object_path(context)
+            bucket_name = self._get_bucket_name(context)
+
+        context.log.info(f"Reading from MinIO: {bucket_name}/{object_path}")
+
+        try:
+            response = self._client.get_object(bucket_name, object_path)
+            data = response.read()
+            response.close()
+            response.release_conn()
+
+            obj = pickle.loads(data)
+
+            context.log.info(
+                f"Successfully read {len(data)} bytes from {bucket_name}/{object_path}"
+            )
+
+            return obj
+        except S3Error as e:
+            context.log.error(f"Error reading from MinIO: {e}")
+            raise
+
+
+@io_manager(
+    config_schema=MinioIOManager.to_config_schema(),
+    description="IO Manager that stores data in MinIO with customizable paths",
+)
+def minio_io_manager(init_context) -> MinioIOManager:
+    """Factory function for creating MinIO IO Manager instances."""
+    return MinioIOManager.from_resource_context(init_context)

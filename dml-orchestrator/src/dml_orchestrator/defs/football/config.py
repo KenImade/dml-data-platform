@@ -70,7 +70,7 @@ class MinIOSettings(BaseSettings):
         validation_alias="MINIO_ROOT_PASSWORD",
     )
 
-    main_bucket: str = Field(default="dml-dev", description="Main bucket for data")
+    main_bucket: str = Field(default="dml-test", description="Main bucket for data")
 
     secure: bool = Field(default=False, description="Use HTTPS connection")
     region: str = Field(default="us-east-1", description="MinIO region")
@@ -105,24 +105,25 @@ class MinIOSettings(BaseSettings):
             return gw.upper()
         return f"GW{gw}"
 
-    def build_raw_gw_key(self, dataset: str, season: str, gw: str, ext="csv") -> str:
+    def build_raw_gw_key(self, dataset: str, season: str, gw: str) -> str:
         season = self.normalize_season(season)
         gw = self.normalize_gw(gw)
-        return f"{self.raw_data_path}/{season}/{gw}/{dataset}.{ext}"
+        return f"{self.raw_data_path}/{season}/{gw}/{dataset}"
 
-    def build_staging_gw_key(
-        self, dataset: str, season: str, gw: str, ext="parquet"
-    ) -> str:
+    def build_staging_gw_key(self, dataset: str, season: str, gw: str) -> str:
         season = self.normalize_season(season)
         gw = self.normalize_gw(gw)
-        return f"{self.staging_data_path}/{season}/{gw}/{dataset}.{ext}"
+        return f"{self.staging_data_path}/{season}/{gw}/{dataset}"
 
     def build_archive_gw_key(
-        self, dataset: str, season: str, gw: str, ext="csv"
+        self,
+        dataset: str,
+        season: str,
+        gw: str,
     ) -> str:
         season = self.normalize_season(season)
         gw = self.normalize_gw(gw)
-        return f"{self.archive_data_path}/{season}/{gw}/{dataset}.{ext}"
+        return f"{self.archive_data_path}/{season}/{gw}/{dataset}"
 
 
 class PipelineSettings(BaseSettings):

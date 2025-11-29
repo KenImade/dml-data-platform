@@ -1,30 +1,47 @@
 import io
 import csv
 import polars as pl
-from dagster import asset_check, AssetCheckResult, AssetCheckSeverity
+from dagster import (
+    asset_check,
+    AssetCheckResult,
+    AssetCheckExecutionContext,
+    AssetCheckSeverity,
+)
 
 
-@asset_check(asset="raw_players_data", description="Ensure player file is not empty")
-def check_players_csv_non_empty(data: bytes) -> AssetCheckResult:
-    if len(data) > 0:
+@asset_check(
+    asset="raw_players_data",
+    description="Ensure players CSV file is not empty",
+)
+def check_players_csv_non_empty(
+    context: AssetCheckExecutionContext, raw_players_data: bytes
+) -> AssetCheckResult:
+    if raw_players_data and len(raw_players_data) > 0:
         return AssetCheckResult(
-            passed=True, description="Players CSV file is not empty"
+            passed=True,
+            description="Players CSV file is not empty",
         )
+
     return AssetCheckResult(
         passed=False,
         description="Players CSV file is empty",
         severity=AssetCheckSeverity.ERROR,
+        metadata={"partition": context.partition_key},
     )
 
 
 @asset_check(
     asset="raw_players_data",
-    description="Ensure players CSV file has the right headers",
+    description="Ensure players CSV file has the correct headers",
 )
-def check_players_csv_headers(data: bytes) -> AssetCheckResult:
+def check_players_csv_headers(
+    context: AssetCheckExecutionContext, raw_players_data: bytes
+) -> AssetCheckResult:
     try:
-        csv_reader = csv.reader(io.StringIO(data.decode("utf-8")))
+        text = raw_players_data.decode("utf-8")
+        csv_reader = csv.reader(io.StringIO(text))
         headers = next(csv_reader)
+
         expected_headers = [
             "player_code",
             "player_id",
@@ -34,16 +51,33 @@ def check_players_csv_headers(data: bytes) -> AssetCheckResult:
             "team_code",
             "position",
         ]
+
         if headers == expected_headers:
             return AssetCheckResult(
-                passed=True, description="Players CSV contains expected headers"
+                passed=True,
+                description="Players CSV contains expected headers",
             )
+
+        return AssetCheckResult(
+            passed=False,
+            description="Players CSV headers did not match expected schema",
+            severity=AssetCheckSeverity.ERROR,
+            metadata={
+                "read_headers": headers,
+                "expected_headers": expected_headers,
+                "partition": context.partition_key,
+            },
+        )
+
     except Exception as e:
         return AssetCheckResult(
             passed=False,
-            description="Players CSV does not contain expected headers",
+            description="Failed to parse players CSV",
             severity=AssetCheckSeverity.ERROR,
-            metadata={"error": str(e)},
+            metadata={
+                "error": str(e),
+                "partition": context.partition_key,
+            },
         )
 
 

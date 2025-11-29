@@ -13,7 +13,6 @@ from .models import Player, Team, PlayerStats, PlayerMatchStats
     description="Validated players data",
     group_name="football_ingestion",
     ins={"raw_players_data": AssetIn()},
-    required_resource_keys={"minio"},
 )
 def validated_players_data(
     context: AssetExecutionContext, raw_players_data: bytes
@@ -55,7 +54,6 @@ def validated_players_data(
     description="Validated teams data",
     group_name="football_ingestion",
     ins={"raw_teams_data": AssetIn()},
-    required_resource_keys={"minio"},
 )
 def validated_teams_data(
     context: AssetExecutionContext, raw_teams_data: bytes
@@ -99,7 +97,6 @@ def validated_teams_data(
     description="Validation of playerstats data",
     group_name="football_ingestion",
     ins={"raw_playerstats_data": AssetIn()},
-    required_resource_keys={"minio"},
 )
 def validated_playerstats_data(
     context: AssetExecutionContext, raw_playerstats_data: bytes
@@ -141,7 +138,6 @@ def validated_playerstats_data(
     description="Validated playermatchstats data",
     group_name="football_ingestion",
     ins={"raw_playermatchstats_data": AssetIn()},
-    required_resource_keys={"minio"},
 )
 def validated_playermatchstats_data(
     context: AssetExecutionContext, raw_playermatchstats_data: bytes
