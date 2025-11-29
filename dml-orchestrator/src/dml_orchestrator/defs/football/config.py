@@ -70,7 +70,7 @@ class MinIOSettings(BaseSettings):
         validation_alias="MINIO_ROOT_PASSWORD",
     )
 
-    main_bucket: str = Field(default="dml-test", description="Main bucket for data")
+    main_bucket: str = Field(default="dml-dev", description="Main bucket for data")
 
     secure: bool = Field(default=False, description="Use HTTPS connection")
     region: str = Field(default="us-east-1", description="MinIO region")

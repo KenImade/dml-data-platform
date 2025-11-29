@@ -11,6 +11,7 @@ from .defs.football.validation import (
     validated_teams_data,
     validated_playerstats_data,
     validated_playermatchstats_data,
+    validated_matches_data,
 )
 
 # from .defs.football.asset_checks import (
@@ -34,6 +35,7 @@ defs = Definitions(
         raw_playermatchstats_data,
         validated_playermatchstats_data,
         raw_matches_data,
+        validated_matches_data,
     ],
     # asset_checks=[
     #     check_players_csv_non_empty,
@@ -44,8 +46,7 @@ defs = Definitions(
     resources={
         "io_manager": minio_io_manager.configured(
             {
-                # "endpoint": minio_config.endpoint_url,
-                "endpoint": "minio:9000",
+                "endpoint": minio_config.endpoint_url,
                 "access_key": minio_config.access_key,
                 "secret_key": minio_config.secret_key,
                 "bucket_name": minio_config.main_bucket,

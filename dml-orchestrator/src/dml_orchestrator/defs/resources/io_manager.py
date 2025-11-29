@@ -39,6 +39,8 @@ class MinioIOManager(ConfigurableIOManager):
     secure: bool = Field(default=False, description="Use HTTPS connection")
     region: Optional[str] = Field(default=None, description="MinIO region")
 
+    RAW_BYTES_EXTENSION: list[str] = ["csv", "parquet", "json", "txt", "xml"]
+
     def setup_for_execution(self, context: InitResourceContext) -> None:
         """Initialize MinIO client and ensure bucket exists"""
         self._client = Minio(
@@ -113,11 +115,21 @@ class MinioIOManager(ConfigurableIOManager):
         """Store the output object in MinIO"""
         object_path = self._get_object_path(context)
         bucket_name = self._get_bucket_name(context)
+        file_extension = context.definition_metadata.get("file_extension", "pickle")
 
         context.log.info(f"Writing to MinIO: {bucket_name}/{object_path}")
 
         try:
-            serialized_data = pickle.dumps(obj)
+            if file_extension in self.RAW_BYTES_EXTENSION:
+                if not isinstance(obj, (bytes, bytearray)):
+                    raise ValueError(
+                        f"Asset {context.asset_key} is marked as raw {file_extension} "
+                        f"but the returned object is not bytes."
+                    )
+                serialized_data = obj
+            else:
+                serialized_data = pickle.dumps(obj)
+
             data_stream = io.BytesIO(serialized_data)
 
             self._client.put_object(
@@ -132,26 +144,88 @@ class MinioIOManager(ConfigurableIOManager):
                 f"Successfully wrote {len(serialized_data)} bytes to {bucket_name}/{object_path}"
             )
 
-            context.add_output_metadata(
-                {
-                    "minio_path": object_path,
-                    "minio_bucket": bucket_name,
-                    "size_bytes": len(serialized_data),
+            # object metadata
+            try:
+                path_info = {
+                    "object_path": object_path,
+                    "bucket_name": bucket_name,
                 }
-            )
+                path_info_key = f"{object_path}.path_info"
+                path_info_bytes = pickle.dumps(path_info)
+                path_info_stream = io.BytesIO(path_info_bytes)
+
+                self._client.put_object(
+                    bucket_name,
+                    path_info_key,
+                    path_info_stream,
+                    length=len(path_info_bytes),
+                    content_type="application/octet-stream",
+                )
+                context.log.info(f"Stored path info at: {path_info_key}")
+            except Exception as e:
+                context.log.warning(f"Could not store path info file: {e}")
+
+            metadata: dict[str, Any] = {
+                "minio_path": object_path,
+                "minio_bucket": bucket_name,
+                "size_bytes": len(serialized_data),
+            }
+            context.log.info(f"Adding output metadata: {metadata}")
+
+            context.add_output_metadata(metadata)
+
         except S3Error as e:
             context.log.error(f"Error writing to MinIO: {e}")
             raise
 
     def load_input(self, context: InputContext) -> Any:
         """Load the input object from MinIO"""
+        context.log.info(f"=== Loading input: {context.name} ===")
+
         upstream_output = context.upstream_output
-        if upstream_output and upstream_output.metadata:
-            object_path = upstream_output.metadata.get("minio_path")
-            bucket_name = upstream_output.metadata.get("minio_bucket", self.bucket_name)
+
+        if not upstream_output:
+            raise ValueError(f"No upstream output found for input '{context.name}'")
+
+        definition_metadata = upstream_output.metadata or {}
+
+        context.log.info(f"Upstream definition metadata: {definition_metadata}")
+
+        path_prefix_value = definition_metadata.get("path_prefix", "")
+        path_suffix_value = definition_metadata.get("path_suffix", "")
+        file_extension = definition_metadata.get("file_extension", "pickle")
+
+        if callable(path_prefix_value):
+            path_prefix = path_prefix_value(upstream_output)
+            context.log.info(f"Computed path_prefix from lambda: {path_prefix}")
         else:
-            object_path = self._get_object_path(context)
-            bucket_name = self._get_bucket_name(context)
+            path_prefix = path_prefix_value
+
+        if callable(path_suffix_value):
+            path_suffix = path_suffix_value(upstream_output)
+            context.log.info(f"Computed path_suffix from lambda: {path_suffix}")
+        else:
+            path_suffix = path_suffix_value
+
+        parts: list[str] = []
+        if path_prefix:
+            parts.append(path_prefix.strip("/"))
+        else:
+            if upstream_output.asset_key:
+                parts.extend(upstream_output.asset_key.path)
+            elif context.asset_key:
+                parts.extend(context.asset_key.path)
+
+            if upstream_output.partition_key:
+                parts.append(f"partition={upstream_output.partition_key}")
+
+        if path_suffix:
+            parts.append(path_suffix)
+
+        object_path = "/".join(parts) if parts else "data"
+        object_path = f"{object_path}.{file_extension}"
+
+        bucket_name = definition_metadata.get("bucket_name", self.bucket_name)
 
         context.log.info(f"Reading from MinIO: {bucket_name}/{object_path}")
 
@@ -161,15 +235,22 @@ class MinioIOManager(ConfigurableIOManager):
             response.close()
             response.release_conn()
 
-            obj = pickle.loads(data)
+            if file_extension in self.RAW_BYTES_EXTENSION:
+                obj = data
+                context.log.info(
+                    f"Successfully read {len(data)} bytes (raw) from {bucket_name}/{object_path}"
+                )
+            else:
+                obj = pickle.loads(data)
 
-            context.log.info(
-                f"Successfully read {len(data)} bytes from {bucket_name}/{object_path}"
-            )
+                context.log.info(
+                    f"Successfully read {len(data)} bytes from (unpickled) from {bucket_name}/{object_path}"
+                )
 
             return obj
         except S3Error as e:
             context.log.error(f"Error reading from MinIO: {e}")
+            context.log.error(f"Attempted path: {bucket_name}/{object_path}")
             raise
 
 
