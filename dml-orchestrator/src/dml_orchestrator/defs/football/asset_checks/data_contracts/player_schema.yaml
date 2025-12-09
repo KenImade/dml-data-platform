@@ -1,0 +1,41 @@
+name: players_contract
+description: "Data contract for Player CSV data"
+versions:
+  "2024-2025":
+    description: "Player schema for the 2024/2025 season"
+    schema:
+      columns:
+        player_code:
+          type: "integer"
+          description: "FPL unique player code"
+          required: true
+        player_id:
+          type: "integer"
+          description: "Unique player id"
+          required: true
+        first_name:
+          type: "string"
+          description: "Player first name"
+          required: true
+        second_name:
+          type: "string"
+          description: "Player second name"
+          required: true
+        web_name:
+          type: "string"
+          description: "Player web name"
+          required: true
+        team_code:
+          type: "integer"
+          description: "id of team player belongs to"
+          required: true
+        position:
+          type: "string"
+          description: "Player position"
+          enum:
+            - Midfielder
+            - Unknown
+            - Goalkeeper
+            - Defender
+            - Forward
+          required: true

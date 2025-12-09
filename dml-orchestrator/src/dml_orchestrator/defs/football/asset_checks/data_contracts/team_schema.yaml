@@ -1,0 +1,59 @@
+name: teams_contract
+description: "Data contract for Team data from FPL API"
+versions: 
+"2024-2025":
+  description: "Team schema for the 2024/2025 season"
+  schema:
+    columns:
+      code:
+        type: "integer"
+        description: "The team's unique code in the FPL API"
+        required: true
+      id:
+        type: "integer"
+        description: "A unique identifier for each team within this dataset"
+        required: true
+      name:
+        type: "string"
+        description: "Full team name"
+        required: true
+      short_name:
+        type: "string"
+        description: "Shortened team name"
+        required: true
+      strength:
+        type: "integer"
+        description: "Overall team strength rating"
+        required: true
+      strength_overall_home:
+        type: "integer"
+        description: "Overall strength rating when playing at home"
+        required: true
+      strength_overall_away:
+        type: "integer"
+        description: "Overall strength rating when playing away"
+        required: true
+      strength_attack_home:
+        type: "integer"
+        description: "Attack strength rating when playing at home"
+        required: true
+      strength_attack_away:
+        type: "integer"
+        description: "Attack strength rating when playing away"
+        required: true
+      strength_defence_home:
+        type: "integer"
+        description: "Defence strength rating when playing at home"
+        required: true
+      strength_defence_away:
+        type: "integer"
+        description: "Defence strength rating when playing away"
+        required: true
+      pulse_id:
+        type: "integer"
+        description: "Team identifier in the Pulse system"
+        required: true
+      elo:
+        type: "integer"
+        description: "Team's Elo rating"
+        required: true

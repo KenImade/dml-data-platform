@@ -1,0 +1,251 @@
+name: player_stats_contract
+version: "1.0"
+description: "Data contract for Player Statistics data from FPL API"
+
+schema:
+  columns:
+    id:
+      type: "int64"
+      description: "Unique player identifier"
+      required: true
+    status:
+      type: "string"
+      description: "Player status code (u=unavailable, a=available, d=doubtful, i=injured, s=suspended, n=not in squad)"
+      required: true
+      enum:
+        - "u"
+        - "a"
+        - "d"
+        - "i"
+        - "s"
+        - "n"
+    chance_of_playing_next_round:
+      type: "float64"
+      description: "Percentage chance of playing in next round"
+      required: false
+      nullable: true
+    chance_of_playing_this_round:
+      type: "float64"
+      description: "Percentage chance of playing in this round"
+      required: false
+      nullable: true
+    now_cost:
+      type: "float64"
+      description: "Current cost of the player"
+      required: true
+    now_cost_rank:
+      type: "int64"
+      description: "Rank based on current cost"
+      required: true
+    now_cost_rank_type:
+      type: "int64"
+      description: "Rank type for cost ranking"
+      required: true
+    cost_change_event:
+      type: "int64"
+      description: "Cost change in current event"
+      required: true
+    cost_change_event_fall:
+      type: "int64"
+      description: "Cost decrease in current event"
+      required: true
+    cost_change_start:
+      type: "int64"
+      description: "Cost change since season start"
+      required: true
+    cost_change_start_fall:
+      type: "int64"
+      description: "Cost decrease since season start"
+      required: true
+    selected_by_percent:
+      type: "float64"
+      description: "Percentage of teams that have selected this player"
+      required: true
+    selected_rank:
+      type: "int64"
+      description: "Rank based on selection percentage"
+      required: true
+    selected_rank_type:
+      type: "int64"
+      description: "Rank type for selection ranking"
+      required: true
+    total_points:
+      type: "int64"
+      description: "Total points scored this season"
+      required: true
+    event_points:
+      type: "int64"
+      description: "Points scored in current event"
+      required: true
+    points_per_game:
+      type: "float64"
+      description: "Average points per game"
+      required: true
+    points_per_game_rank:
+      type: "int64"
+      description: "Rank based on points per game"
+      required: true
+    points_per_game_rank_type:
+      type: "int64"
+      description: "Rank type for points per game ranking"
+      required: true
+    bonus:
+      type: "int64"
+      description: "Bonus points earned"
+      required: true
+    bps:
+      type: "int64"
+      description: "Bonus points system score"
+      required: true
+    form:
+      type: "float64"
+      description: "Recent form rating"
+      required: true
+    form_rank:
+      type: "int64"
+      description: "Rank based on form"
+      required: true
+    form_rank_type:
+      type: "int64"
+      description: "Rank type for form ranking"
+      required: true
+    value_form:
+      type: "float64"
+      description: "Value for money based on form"
+      required: true
+    value_season:
+      type: "float64"
+      description: "Value for money based on season performance"
+      required: true
+    dreamteam_count:
+      type: "int64"
+      description: "Number of times in dream team"
+      required: true
+    transfers_in:
+      type: "int64"
+      description: "Total transfers in"
+      required: true
+    transfers_in_event:
+      type: "int64"
+      description: "Transfers in during current event"
+      required: true
+    transfers_out:
+      type: "int64"
+      description: "Total transfers out"
+      required: true
+    transfers_out_event:
+      type: "int64"
+      description: "Transfers out during current event"
+      required: true
+    ep_next:
+      type: "float64"
+      description: "Expected points in next round"
+      required: true
+    ep_this:
+      type: "float64"
+      description: "Expected points in this round"
+      required: true
+    expected_goals:
+      type: "float64"
+      description: "Expected goals (xG)"
+      required: true
+    expected_assists:
+      type: "float64"
+      description: "Expected assists (xA)"
+      required: true
+    expected_goal_involvements:
+      type: "float64"
+      description: "Expected goal involvements (xGI)"
+      required: true
+    expected_goals_conceded:
+      type: "float64"
+      description: "Expected goals conceded (xGC)"
+      required: true
+    expected_goals_per_90:
+      type: "float64"
+      description: "Expected goals per 90 minutes"
+      required: true
+    expected_assists_per_90:
+      type: "float64"
+      description: "Expected assists per 90 minutes"
+      required: true
+    expected_goal_involvements_per_90:
+      type: "float64"
+      description: "Expected goal involvements per 90 minutes"
+      required: true
+    expected_goals_conceded_per_90:
+      type: "float64"
+      description: "Expected goals conceded per 90 minutes"
+      required: true
+    influence:
+      type: "float64"
+      description: "Influence rating"
+      required: true
+    influence_rank:
+      type: "int64"
+      description: "Rank based on influence"
+      required: true
+    influence_rank_type:
+      type: "int64"
+      description: "Rank type for influence ranking"
+      required: true
+    creativity:
+      type: "float64"
+      description: "Creativity rating"
+      required: true
+    creativity_rank:
+      type: "int64"
+      description: "Rank based on creativity"
+      required: true
+    creativity_rank_type:
+      type: "int64"
+      description: "Rank type for creativity ranking"
+      required: true
+    threat:
+      type: "float64"
+      description: "Threat rating"
+      required: true
+    threat_rank:
+      type: "int64"
+      description: "Rank based on threat"
+      required: true
+    threat_rank_type:
+      type: "int64"
+      description: "Rank type for threat ranking"
+      required: true
+    ict_index:
+      type: "float64"
+      description: "ICT (Influence, Creativity, Threat) index"
+      required: true
+    ict_index_rank:
+      type: "int64"
+      description: "Rank based on ICT index"
+      required: true
+    ict_index_rank_type:
+      type: "int64"
+      description: "Rank type for ICT index ranking"
+      required: true
+    corners_and_indirect_freekicks_order:
+      type: "float64"
+      description: "Order for taking corners and indirect free kicks"
+      required: false
+      nullable: true
+    direct_freekicks_order:
+      type: "float64"
+      description: "Order for taking direct free kicks"
+      required: false
+      nullable: true
+    penalties_order:
+      type: "float64"
+      description: "Order for taking penalties"
+      required: false
+      nullable: true
+    gw:
+      type: "int64"
+      description: "Game week number"
+      required: true
+    set_piece_threat:
+      type: "float64"
+      description: "Set piece threat rating"
+      required: false
+      nullable: true

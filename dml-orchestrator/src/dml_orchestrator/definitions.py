@@ -1,48 +1,23 @@
-from dagster import Definitions
-from .defs.football.ingestion import (
-    raw_players_data,
-    raw_teams_data,
-    raw_playerstats_data,
-    raw_playermatchstats_data,
-    raw_matches_data,
-)
-from .defs.football.validation import (
-    validated_players_data,
-    validated_teams_data,
-    validated_playerstats_data,
-    validated_playermatchstats_data,
-    validated_matches_data,
+from dagster import (
+    Definitions,
+    load_assets_from_modules,
+    load_asset_checks_from_modules,
 )
 
-# from .defs.football.asset_checks import (
-#     check_players_csv_non_empty,
-#     check_players_csv_headers,
-#     check_players_schema,
-#     check_number_of_teams,
-# )
+from .defs.football import ingestion
+from .defs.football.asset_checks import raw_player_data_checks, raw_teams_data_checks
 from .defs.resources.io_manager import minio_io_manager
 from .defs.football.config import minio_config
 
 
 defs = Definitions(
-    assets=[
-        raw_players_data,
-        validated_players_data,
-        raw_teams_data,
-        validated_teams_data,
-        raw_playerstats_data,
-        validated_playerstats_data,
-        raw_playermatchstats_data,
-        validated_playermatchstats_data,
-        raw_matches_data,
-        validated_matches_data,
-    ],
-    # asset_checks=[
-    #     check_players_csv_non_empty,
-    #     check_players_csv_headers,
-    #     check_players_schema,
-    #     check_number_of_teams,
-    # ],
+    assets=load_assets_from_modules([ingestion]),
+    # asset_checks=load_asset_checks_from_modules(
+    #     [raw_player_data_checks, raw_teams_data_checks]
+    # ),
+    asset_checks=load_asset_checks_from_modules(
+        [raw_player_data_checks, raw_teams_data_checks]
+    ),
     resources={
         "io_manager": minio_io_manager.configured(
             {

@@ -1,3 +1,4 @@
+from typing import Any
 from dagster import asset, AssetExecutionContext
 
 from .config import github_config, minio_config
@@ -30,13 +31,13 @@ def raw_players_data(context: AssetExecutionContext) -> bytes:
 
     csv_bytes = get_csv(url)
 
-    context.add_output_metadata(
-        {
-            "source_url": url,
-            "season": season,
-            "gameweek": gw,
-        }
-    )
+    metadata = {
+        "source_url": url,
+        "season": season,
+        "gameweek": gw,
+    }
+
+    context.add_output_metadata(metadata)
 
     return csv_bytes
 

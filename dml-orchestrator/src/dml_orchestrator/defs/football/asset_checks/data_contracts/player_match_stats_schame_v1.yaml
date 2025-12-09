@@ -1,0 +1,222 @@
+name: player_match_stats_contract
+version: "1.0"
+description: "Data contract for Player Match Statistics data"
+
+schema:
+  columns:
+    player_id:
+      type: "int64"
+      description: "Unique player identifier"
+      required: true
+    match_id:
+      type: "string"
+      description: "Unique match identifier"
+      required: true
+    minutes_played:
+      type: "int64"
+      description: "Total minutes played in the match"
+      required: true
+    goals:
+      type: "int64"
+      description: "Goals scored"
+      required: true
+    assists:
+      type: "int64"
+      description: "Assists provided"
+      required: true
+    total_shots:
+      type: "int64"
+      description: "Total shots taken"
+      required: true
+    xg:
+      type: "float64"
+      description: "Expected goals (xG)"
+      required: true
+    xa:
+      type: "float64"
+      description: "Expected assists (xA)"
+      required: true
+    xgot:
+      type: "float64"
+      description: "Expected goals on target (xGOT)"
+      required: true
+    shots_on_target:
+      type: "int64"
+      description: "Shots on target"
+      required: true
+    successful_dribbles:
+      type: "int64"
+      description: "Number of successful dribbles"
+      required: true
+    big_chances_missed:
+      type: "int64"
+      description: "Number of big chances missed"
+      required: true
+    touches_opposition_box:
+      type: "int64"
+      description: "Touches in opposition box"
+      required: true
+    touches:
+      type: "int64"
+      description: "Total touches"
+      required: true
+    accurate_passes:
+      type: "int64"
+      description: "Number of accurate passes"
+      required: true
+    chances_created:
+      type: "int64"
+      description: "Chances created for teammates"
+      required: true
+    final_third_passes:
+      type: "int64"
+      description: "Passes made in the final third"
+      required: true
+    accurate_crosses:
+      type: "int64"
+      description: "Number of accurate crosses"
+      required: true
+    accurate_long_balls:
+      type: "int64"
+      description: "Number of accurate long balls"
+      required: true
+    tackles_won:
+      type: "int64"
+      description: "Tackles won"
+      required: true
+    interceptions:
+      type: "int64"
+      description: "Number of interceptions"
+      required: true
+    recoveries:
+      type: "int64"
+      description: "Ball recoveries"
+      required: true
+    blocks:
+      type: "int64"
+      description: "Shots or passes blocked"
+      required: true
+    clearances:
+      type: "int64"
+      description: "Number of clearances"
+      required: true
+    headed_clearances:
+      type: "int64"
+      description: "Clearances made with head"
+      required: true
+    dribbled_past:
+      type: "int64"
+      description: "Times dribbled past by opponent"
+      required: true
+    duels_won:
+      type: "int64"
+      description: "Total duels won"
+      required: true
+    duels_lost:
+      type: "int64"
+      description: "Total duels lost"
+      required: true
+    ground_duels_won:
+      type: "int64"
+      description: "Ground duels won"
+      required: true
+    aerial_duels_won:
+      type: "int64"
+      description: "Aerial duels won"
+      required: true
+    was_fouled:
+      type: "int64"
+      description: "Number of times fouled"
+      required: true
+    fouls_committed:
+      type: "int64"
+      description: "Fouls committed"
+      required: true
+    saves:
+      type: "int64"
+      description: "Saves made (goalkeeper stat)"
+      required: true
+    goals_conceded:
+      type: "int64"
+      description: "Goals conceded (goalkeeper stat)"
+      required: true
+    xgot_faced:
+      type: "int64"
+      description: "Expected goals on target faced (goalkeeper stat)"
+      required: true
+    goals_prevented:
+      type: "int64"
+      description: "Goals prevented (goalkeeper stat)"
+      required: true
+    sweeper_actions:
+      type: "int64"
+      description: "Sweeper keeper actions"
+      required: true
+    gk_accurate_passes:
+      type: "int64"
+      description: "Goalkeeper accurate passes"
+      required: true
+    gk_accurate_long_balls:
+      type: "int64"
+      description: "Goalkeeper accurate long balls"
+      required: true
+    offsides:
+      type: "int64"
+      description: "Offsides committed"
+      required: true
+    high_claim:
+      type: "int64"
+      description: "High claims (goalkeeper stat)"
+      required: true
+    tackles:
+      type: "int64"
+      description: "Total tackles attempted"
+      required: true
+    accurate_passes_percent:
+      type: "int64"
+      description: "Percentage of accurate passes"
+      required: true
+    accurate_crosses_percent:
+      type: "int64"
+      description: "Percentage of accurate crosses"
+      required: true
+    accurate_long_balls_percent:
+      type: "int64"
+      description: "Percentage of accurate long balls"
+      required: true
+    ground_duels_won_percent:
+      type: "int64"
+      description: "Percentage of ground duels won"
+      required: true
+    aerial_duels_won_percent:
+      type: "int64"
+      description: "Percentage of aerial duels won"
+      required: true
+    successful_dribbles_percent:
+      type: "int64"
+      description: "Percentage of successful dribbles"
+      required: true
+    tackles_won_percent:
+      type: "int64"
+      description: "Percentage of tackles won"
+      required: true
+    start_min:
+      type: "int64"
+      description: "Minute when player started (0 for starting lineup)"
+      required: true
+    finish_min:
+      type: "int64"
+      description: "Minute when player finished playing"
+      required: true
+    team_goals_conceded:
+      type: "int64"
+      description: "Goals conceded by player's team"
+      required: true
+    penalties_scored:
+      type: "int64"
+      description: "Penalties scored"
+      required: true
+    penalties_missed:
+      type: "int64"
+      description: "Penalties missed"
+      required: true

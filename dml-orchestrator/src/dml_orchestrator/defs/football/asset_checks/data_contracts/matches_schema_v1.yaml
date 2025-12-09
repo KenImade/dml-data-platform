@@ -1,0 +1,414 @@
+name: matches_contract
+version: "1.0"
+description: "Data contract for Matches data with team statistics"
+
+schema:
+  columns:
+    gameweek:
+      type: "int64"
+      description: "Game week number"
+      required: true
+    kickoff_time:
+      type: "string"
+      description: "Match kickoff time"
+      required: true
+    home_team:
+      type: "int64"
+      description: "Home team identifier"
+      required: true
+    home_team_elo:
+      type: "float64"
+      description: "Home team Elo rating"
+      required: true
+    home_score:
+      type: "int64"
+      description: "Home team score"
+      required: true
+    away_score:
+      type: "int64"
+      description: "Away team score"
+      required: true
+    away_team:
+      type: "int64"
+      description: "Away team identifier"
+      required: true
+    away_team_elo:
+      type: "float64"
+      description: "Away team Elo rating"
+      required: true
+    finished:
+      type: "bool"
+      description: "Whether the match has finished"
+      required: true
+    match_id:
+      type: "string"
+      description: "Unique match identifier"
+      required: true
+    match_url:
+      type: "string"
+      description: "URL to match details"
+      required: true
+    home_possession:
+      type: "int64"
+      description: "Home team possession percentage"
+      required: true
+    away_possession:
+      type: "int64"
+      description: "Away team possession percentage"
+      required: true
+    home_expected_goals_xg:
+      type: "float64"
+      description: "Home team expected goals (xG)"
+      required: true
+    away_expected_goals_xg:
+      type: "float64"
+      description: "Away team expected goals (xG)"
+      required: true
+    home_total_shots:
+      type: "int64"
+      description: "Home team total shots"
+      required: true
+    away_total_shots:
+      type: "int64"
+      description: "Away team total shots"
+      required: true
+    home_shots_on_target:
+      type: "int64"
+      description: "Home team shots on target"
+      required: true
+    away_shots_on_target:
+      type: "int64"
+      description: "Away team shots on target"
+      required: true
+    home_big_chances:
+      type: "int64"
+      description: "Home team big chances created"
+      required: true
+    away_big_chances:
+      type: "int64"
+      description: "Away team big chances created"
+      required: true
+    home_big_chances_missed:
+      type: "int64"
+      description: "Home team big chances missed"
+      required: true
+    away_big_chances_missed:
+      type: "int64"
+      description: "Away team big chances missed"
+      required: true
+    home_accurate_passes:
+      type: "int64"
+      description: "Home team accurate passes"
+      required: true
+    away_accurate_passes:
+      type: "int64"
+      description: "Away team accurate passes"
+      required: true
+    home_accurate_passes_pct:
+      type: "int64"
+      description: "Home team accurate passes percentage"
+      required: true
+    away_accurate_passes_pct:
+      type: "int64"
+      description: "Away team accurate passes percentage"
+      required: true
+    home_fouls_committed:
+      type: "int64"
+      description: "Home team fouls committed"
+      required: true
+    away_fouls_committed:
+      type: "int64"
+      description: "Away team fouls committed"
+      required: true
+    home_corners:
+      type: "int64"
+      description: "Home team corners"
+      required: true
+    away_corners:
+      type: "int64"
+      description: "Away team corners"
+      required: true
+    home_xg_open_play:
+      type: "float64"
+      description: "Home team expected goals from open play"
+      required: true
+    away_xg_open_play:
+      type: "float64"
+      description: "Away team expected goals from open play"
+      required: true
+    home_xg_set_play:
+      type: "float64"
+      description: "Home team expected goals from set pieces"
+      required: true
+    away_xg_set_play:
+      type: "float64"
+      description: "Away team expected goals from set pieces"
+      required: true
+    home_non_penalty_xg:
+      type: "float64"
+      description: "Home team non-penalty expected goals"
+      required: true
+    away_non_penalty_xg:
+      type: "float64"
+      description: "Away team non-penalty expected goals"
+      required: true
+    home_xg_on_target_xgot:
+      type: "float64"
+      description: "Home team expected goals on target (xGOT)"
+      required: true
+    away_xg_on_target_xgot:
+      type: "float64"
+      description: "Away team expected goals on target (xGOT)"
+      required: true
+    home_shots_off_target:
+      type: "int64"
+      description: "Home team shots off target"
+      required: true
+    away_shots_off_target:
+      type: "int64"
+      description: "Away team shots off target"
+      required: true
+    home_blocked_shots:
+      type: "int64"
+      description: "Home team blocked shots"
+      required: true
+    away_blocked_shots:
+      type: "int64"
+      description: "Away team blocked shots"
+      required: true
+    home_hit_woodwork:
+      type: "int64"
+      description: "Home team shots that hit the woodwork"
+      required: true
+    away_hit_woodwork:
+      type: "int64"
+      description: "Away team shots that hit the woodwork"
+      required: true
+    home_shots_inside_box:
+      type: "int64"
+      description: "Home team shots inside the box"
+      required: true
+    away_shots_inside_box:
+      type: "int64"
+      description: "Away team shots inside the box"
+      required: true
+    home_shots_outside_box:
+      type: "int64"
+      description: "Home team shots outside the box"
+      required: true
+    away_shots_outside_box:
+      type: "int64"
+      description: "Away team shots outside the box"
+      required: true
+    home_passes:
+      type: "int64"
+      description: "Home team total passes"
+      required: true
+    away_passes:
+      type: "int64"
+      description: "Away team total passes"
+      required: true
+    home_own_half:
+      type: "int64"
+      description: "Home team passes in own half"
+      required: true
+    away_own_half:
+      type: "int64"
+      description: "Away team passes in own half"
+      required: true
+    home_opposition_half:
+      type: "int64"
+      description: "Home team passes in opposition half"
+      required: true
+    away_opposition_half:
+      type: "int64"
+      description: "Away team passes in opposition half"
+      required: true
+    home_accurate_long_balls:
+      type: "int64"
+      description: "Home team accurate long balls"
+      required: true
+    away_accurate_long_balls:
+      type: "int64"
+      description: "Away team accurate long balls"
+      required: true
+    home_accurate_long_balls_pct:
+      type: "int64"
+      description: "Home team accurate long balls percentage"
+      required: true
+    away_accurate_long_balls_pct:
+      type: "int64"
+      description: "Away team accurate long balls percentage"
+      required: true
+    home_accurate_crosses:
+      type: "int64"
+      description: "Home team accurate crosses"
+      required: true
+    away_accurate_crosses:
+      type: "int64"
+      description: "Away team accurate crosses"
+      required: true
+    home_accurate_crosses_pct:
+      type: "int64"
+      description: "Home team accurate crosses percentage"
+      required: true
+    away_accurate_crosses_pct:
+      type: "int64"
+      description: "Away team accurate crosses percentage"
+      required: true
+    home_throws:
+      type: "int64"
+      description: "Home team throw-ins"
+      required: true
+    away_throws:
+      type: "int64"
+      description: "Away team throw-ins"
+      required: true
+    home_touches_in_opposition_box:
+      type: "int64"
+      description: "Home team touches in opposition box"
+      required: true
+    away_touches_in_opposition_box:
+      type: "int64"
+      description: "Away team touches in opposition box"
+      required: true
+    home_offsides:
+      type: "int64"
+      description: "Home team offsides"
+      required: true
+    away_offsides:
+      type: "int64"
+      description: "Away team offsides"
+      required: true
+    home_yellow_cards:
+      type: "int64"
+      description: "Home team yellow cards"
+      required: true
+    away_yellow_cards:
+      type: "int64"
+      description: "Away team yellow cards"
+      required: true
+    home_red_cards:
+      type: "int64"
+      description: "Home team red cards"
+      required: true
+    away_red_cards:
+      type: "int64"
+      description: "Away team red cards"
+      required: true
+    home_tackles_won:
+      type: "int64"
+      description: "Home team tackles won"
+      required: true
+    away_tackles_won:
+      type: "int64"
+      description: "Away team tackles won"
+      required: true
+    home_tackles_won_pct:
+      type: "int64"
+      description: "Home team tackles won percentage"
+      required: true
+    away_tackles_won_pct:
+      type: "int64"
+      description: "Away team tackles won percentage"
+      required: true
+    home_interceptions:
+      type: "int64"
+      description: "Home team interceptions"
+      required: true
+    away_interceptions:
+      type: "int64"
+      description: "Away team interceptions"
+      required: true
+    home_blocks:
+      type: "int64"
+      description: "Home team blocks"
+      required: true
+    away_blocks:
+      type: "int64"
+      description: "Away team blocks"
+      required: true
+    home_clearances:
+      type: "int64"
+      description: "Home team clearances"
+      required: true
+    away_clearances:
+      type: "int64"
+      description: "Away team clearances"
+      required: true
+    home_keeper_saves:
+      type: "int64"
+      description: "Home team goalkeeper saves"
+      required: true
+    away_keeper_saves:
+      type: "int64"
+      description: "Away team goalkeeper saves"
+      required: true
+    home_duels_won:
+      type: "int64"
+      description: "Home team duels won"
+      required: true
+    away_duels_won:
+      type: "int64"
+      description: "Away team duels won"
+      required: true
+    home_ground_duels_won:
+      type: "int64"
+      description: "Home team ground duels won"
+      required: true
+    away_ground_duels_won:
+      type: "int64"
+      description: "Away team ground duels won"
+      required: true
+    home_ground_duels_won_pct:
+      type: "int64"
+      description: "Home team ground duels won percentage"
+      required: true
+    away_ground_duels_won_pct:
+      type: "int64"
+      description: "Away team ground duels won percentage"
+      required: true
+    home_aerial_duels_won:
+      type: "int64"
+      description: "Home team aerial duels won"
+      required: true
+    away_aerial_duels_won:
+      type: "int64"
+      description: "Away team aerial duels won"
+      required: true
+    home_aerial_duels_won_pct:
+      type: "int64"
+      description: "Home team aerial duels won percentage"
+      required: true
+    away_aerial_duels_won_pct:
+      type: "int64"
+      description: "Away team aerial duels won percentage"
+      required: true
+    home_successful_dribbles:
+      type: "int64"
+      description: "Home team successful dribbles"
+      required: true
+    away_successful_dribbles:
+      type: "int64"
+      description: "Away team successful dribbles"
+      required: true
+    home_successful_dribbles_pct:
+      type: "int64"
+      description: "Home team successful dribbles percentage"
+      required: true
+    away_successful_dribbles_pct:
+      type: "int64"
+      description: "Away team successful dribbles percentage"
+      required: true
+    fotmob_id:
+      type: "int64"
+      description: "FotMob match identifier"
+      required: true
+    stats_processed:
+      type: "bool"
+      description: "Whether match statistics have been processed"
+      required: true
+    player_stats_processed:
+      type: "bool"
+      description: "Whether player statistics have been processed"
+      required: true
